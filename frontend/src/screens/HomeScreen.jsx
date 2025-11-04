@@ -5,7 +5,6 @@ import items from "../items";
 import "../styles/screens/HomeScreen.css";
 
 const HomeScreen = () => {
-  // Get 4 most recent items based on dateFound
   const recentItems = useMemo(() => {
     return [...items]
       .sort((a, b) => new Date(b.dateFound) - new Date(a.dateFound))
