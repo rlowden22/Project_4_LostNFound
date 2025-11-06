@@ -22,14 +22,26 @@ const HomeScreen = () => {
     const fetchItems = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_BASE_URL}/api/items`);
+        // Request only searching items (not claimed) with limit of 4
+        const response = await fetch(`${API_BASE_URL}/api/items?status=searching&limit=4`);
         if (!response.ok) {
           throw new Error("Failed to fetch items");
         }
         const data = await response.json();
-        // Filter out items with status "claimed", then sort by dateFound (most recent first) and take first 4
-        const activeItems = data.filter((item) => item.status !== "claimed");
-        const recentItems = [...activeItems]
+        // Handle both old format (array) and new format (object with items and pagination)
+        let itemsArray = [];
+        if (Array.isArray(data)) {
+          // Old format - filter out claimed items
+          itemsArray = data.filter((item) => item.status !== "claimed");
+        } else if (data.items && Array.isArray(data.items)) {
+          // New format - use items from paginated response
+          itemsArray = data.items;
+        } else {
+          itemsArray = [];
+        }
+        
+        // Sort by dateFound (most recent first) and take first 4
+        const recentItems = [...itemsArray]
           .sort((a, b) => new Date(b.dateFound) - new Date(a.dateFound))
           .slice(0, 4);
         setItems(recentItems);
