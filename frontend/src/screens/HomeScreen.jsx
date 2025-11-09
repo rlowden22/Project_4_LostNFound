@@ -2,15 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Spinner } from "react-bootstrap";
 import Item from "../components/Item";
 import "../styles/screens/HomeScreen.css";
-
-const isBrowser = typeof window !== "undefined";
-const DEFAULT_API_BASE_URL = import.meta.env.DEV
-  ? "http://localhost:4000"
-  : isBrowser
-    ? window.location.origin
-    : "http://localhost:4000";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL;
+import { API_BASE_URL } from "../config/api";
 
 const HomeScreen = () => {
   const [items, setItems] = useState([]);
@@ -89,5 +81,7 @@ const HomeScreen = () => {
     </div>
   );
 };
+
+HomeScreen.propTypes = {};
 
 export default HomeScreen;

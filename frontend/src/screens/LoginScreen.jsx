@@ -2,15 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, Card, Form, Button, Row, Col } from "react-bootstrap";
 import "../styles/screens/LoginScreen.css";
-
-const isBrowser = typeof window !== "undefined";
-const DEFAULT_API_BASE_URL = import.meta.env.DEV
-  ? "http://localhost:4000"
-  : isBrowser
-    ? window.location.origin
-    : "http://localhost:4000";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL;
+import { API_BASE_URL } from "../config/api";
 
 const LoginScreen = () => {
   const navigate = useNavigate();
@@ -255,5 +247,7 @@ const LoginScreen = () => {
     </div>
   );
 };
+
+LoginScreen.propTypes = {};
 
 export default LoginScreen;

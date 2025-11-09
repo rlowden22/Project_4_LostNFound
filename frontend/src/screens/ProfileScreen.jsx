@@ -22,15 +22,7 @@ import {
   FaUserCircle,
 } from "react-icons/fa";
 import "../styles/screens/ProfileScreen.css";
-
-const isBrowser = typeof window !== "undefined";
-const DEFAULT_API_BASE_URL = import.meta.env.DEV
-  ? "http://localhost:4000"
-  : isBrowser
-    ? window.location.origin
-    : "http://localhost:4000";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL;
+import { API_BASE_URL } from "../config/api";
 
 const ProfileScreen = () => {
   const navigate = useNavigate();
@@ -555,5 +547,7 @@ const ProfileScreen = () => {
     </div>
   );
 };
+
+ProfileScreen.propTypes = {};
 
 export default ProfileScreen;

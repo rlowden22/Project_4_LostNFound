@@ -12,15 +12,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import Item from "../components/Item";
 import Searchbar from "../components/Searchbar";
 import "../styles/screens/LostItemsScreen.css";
-
-const isBrowser = typeof window !== "undefined";
-const DEFAULT_API_BASE_URL = import.meta.env.DEV
-  ? "http://localhost:4000"
-  : isBrowser
-    ? window.location.origin
-    : "http://localhost:4000";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL;
+import { API_BASE_URL } from "../config/api";
 
 const LostItemsScreen = () => {
   const [items, setItems] = useState([]);
@@ -328,5 +320,7 @@ const LostItemsScreen = () => {
     </div>
   );
 };
+
+LostItemsScreen.propTypes = {};
 
 export default LostItemsScreen;

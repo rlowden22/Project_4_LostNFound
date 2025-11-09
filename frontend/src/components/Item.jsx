@@ -1,16 +1,9 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { Card } from "react-bootstrap";
 import "../styles/components/Item.css";
-
-const isBrowser = typeof window !== "undefined";
-const DEFAULT_API_BASE_URL = import.meta.env.DEV
-  ? "http://localhost:4000"
-  : isBrowser
-    ? window.location.origin
-    : "http://localhost:4000";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL;
+import { API_BASE_URL } from "../config/api";
 
 const Item = ({ item }) => {
   // Construct full image URL if image exists
@@ -48,6 +41,15 @@ const Item = ({ item }) => {
       </Card.Body>
     </Card>
   );
+};
+
+Item.propTypes = {
+  item: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    image: PropTypes.string,
+    name: PropTypes.string.isRequired,
+    location: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 export default Item;

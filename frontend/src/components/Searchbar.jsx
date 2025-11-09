@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { Form } from "react-bootstrap";
 import { FaSearch } from "react-icons/fa";
 import "../styles/components/Searchbar.css";
@@ -18,6 +19,11 @@ const Searchbar = ({ searchTerm, onSearchChange }) => {
       </Form.Group>
     </div>
   );
+};
+
+Searchbar.propTypes = {
+  searchTerm: PropTypes.string.isRequired,
+  onSearchChange: PropTypes.func.isRequired,
 };
 
 export default Searchbar;
