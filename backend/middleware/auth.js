@@ -2,13 +2,12 @@ const jwt = require("jsonwebtoken");
 const { ObjectId } = require("mongodb");
 const { getDb } = require("../config/db");
 
-// JWT secret from environment variables (should be set in .env)
 const JWT_SECRET =
   process.env.JWT_SECRET || "your-secret-key-change-in-production";
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
 
 /**
- * Generate JWT token for a user
+ * Generating JWT token for a user
  * @param {Object} user - User object (should not include password)
  * @returns {string} JWT token
  */
@@ -24,7 +23,7 @@ function generateToken(user) {
 }
 
 /**
- * Verify JWT token and extract user information
+ * Verifying JWT token and extracting user information
  * @param {string} token - JWT token
  * @returns {Object|null} Decoded token payload or null if invalid
  */
@@ -42,7 +41,6 @@ function verifyToken(token) {
  */
 const authenticate = async (req, res, next) => {
   try {
-    // Get token from Authorization header
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
@@ -51,7 +49,6 @@ const authenticate = async (req, res, next) => {
         .json({ message: "No authorization token provided." });
     }
 
-    // Extract token from "Bearer <token>" format
     const parts = authHeader.split(" ");
     if (parts.length !== 2 || parts[0] !== "Bearer") {
       return res
@@ -63,13 +60,12 @@ const authenticate = async (req, res, next) => {
 
     const token = parts[1];
 
-    // Verify token
+
     const decoded = verifyToken(token);
     if (!decoded) {
       return res.status(401).json({ message: "Invalid or expired token." });
     }
 
-    // Get user from database to ensure user still exists
     const db = await getDb();
     const usersCollection = db.collection("Users");
 
@@ -84,7 +80,6 @@ const authenticate = async (req, res, next) => {
       return res.status(401).json({ message: "User not found." });
     }
 
-    // Attach user info to request object (without password)
     const { passwordHash: _, ...userWithoutPassword } = user;
     req.user = userWithoutPassword;
     req.userId = decoded.userId;
@@ -105,16 +100,14 @@ const optionalAuthenticate = async (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
-      // No token provided, continue without authentication
       req.user = null;
       req.userId = null;
       return next();
     }
 
-    // Extract token from "Bearer <token>" format
+ 
     const parts = authHeader.split(" ");
     if (parts.length !== 2 || parts[0] !== "Bearer") {
-      // Invalid format, continue without authentication
       req.user = null;
       req.userId = null;
       return next();
@@ -122,16 +115,14 @@ const optionalAuthenticate = async (req, res, next) => {
 
     const token = parts[1];
 
-    // Verify token
+  
     const decoded = verifyToken(token);
     if (!decoded) {
-      // Invalid token, continue without authentication
       req.user = null;
       req.userId = null;
       return next();
     }
 
-    // Get user from database
     const db = await getDb();
     const usersCollection = db.collection("Users");
 
@@ -155,7 +146,6 @@ const optionalAuthenticate = async (req, res, next) => {
     next();
   } catch (error) {
     console.error("Optional authentication error:", error);
-    // On error, continue without authentication
     req.user = null;
     req.userId = null;
     next();

@@ -80,10 +80,10 @@ router.post("/login", async (req, res, next) => {
       return res.status(401).json({ message: "Invalid email or password." });
     }
 
-    // Remove password from response
+
     const { passwordHash: _, ...userWithoutPassword } = user;
 
-    // Generate JWT token
+   
     const token = generateToken(user);
 
     res.json({
@@ -117,7 +117,6 @@ router.get("/profile", async (req, res, next) => {
       return res.status(404).json({ message: "User not found." });
     }
 
-    // Remove password from response
     const { passwordHash: _, ...userWithoutPassword } = user;
 
     res.json(userWithoutPassword);

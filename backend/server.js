@@ -2,7 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const dotenv = require("dotenv");
 
-// Load environment variables from the project root or backend folder
+// Loading environment variables from the project root or backend folder
 const envPaths = [
   path.join(__dirname, "../.env"),
   path.join(__dirname, ".env"),
@@ -17,7 +17,7 @@ if (envPath) {
 const express = require("express");
 const cors = require("cors");
 
-// Import routes
+// Importing routes
 const userRoutes = require("./routes/users");
 const itemRoutes = require("./routes/items");
 const notificationRoutes = require("./routes/notifications");
@@ -28,7 +28,7 @@ const port = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json());
 
-// Serve static files from uploads directory
+
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes
@@ -39,10 +39,9 @@ app.use("/api/users", userRoutes);
 app.use("/api/items", itemRoutes);
 app.use("/api/notifications", notificationRoutes);
 
-// Central error handler
-// eslint-disable-next-line no-unused-vars
+
+
 app.use((err, _req, res, _next) => {
-  // Central error handler to avoid leaking stack traces
   console.error(err);
 
   // Handle multer errors (file upload errors)
@@ -57,7 +56,6 @@ app.use((err, _req, res, _next) => {
       .json({ message: err.message || "File upload error." });
   }
 
-  // Handle other errors
   res.status(500).json({ message: "Internal server error." });
 });
 

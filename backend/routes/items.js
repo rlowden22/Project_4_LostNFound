@@ -24,7 +24,6 @@ router.get("/", async (req, res, next) => {
     const db = await getDb();
     const itemsCollection = db.collection("Items");
 
-    // Build query filter
     const filter = {};
 
     if (userId) {
@@ -56,12 +55,12 @@ router.get("/", async (req, res, next) => {
       ];
     }
 
-    // Parse pagination parameters
+
     const pageNum = parseInt(page, 10);
     const limitNum = parseInt(limit, 10);
     const skip = (pageNum - 1) * limitNum;
 
-    // Get total count for pagination
+  
     const totalCount = await itemsCollection.countDocuments(filter);
 
     // Get paginated items
@@ -72,7 +71,6 @@ router.get("/", async (req, res, next) => {
       .limit(limitNum)
       .toArray();
 
-    // Calculate total pages
     const totalPages = Math.ceil(totalCount / limitNum);
 
     res.json({
@@ -114,7 +112,7 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-// POST /api/items - Create a new item (requires authentication)
+// POST /api/items - Creating a new item (requires authentication)
 router.post(
   "/",
   authenticate,
@@ -125,7 +123,7 @@ router.post(
         req.body;
 
       if (!name || !location || !description || !dateFound || !category) {
-        // If file was uploaded but validation failed, delete it
+
         if (req.file) {
           try {
             fs.unlinkSync(req.file.path);
@@ -139,14 +137,14 @@ router.post(
       const db = await getDb();
       const itemsCollection = db.collection("Items");
 
-      // Get image path if file was uploaded
+
       let imagePath = null;
       if (req.file) {
-        // Store relative path from backend/uploads
+
         imagePath = `/uploads/${req.file.filename}`;
       }
 
-      // Use userId from authenticated user (req.userId is set by authenticate middleware)
+
       const newItem = {
         userId: req.userId,
         name: name.trim(),
@@ -155,7 +153,7 @@ router.post(
         dateFound,
         category: category.trim(),
         image: imagePath,
-        status: status || "searching", // "searching" or "claimed"
+        status: status || "searching",
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -163,18 +161,18 @@ router.post(
       const result = await itemsCollection.insertOne(newItem);
       const itemId = result.insertedId.toString();
 
-      // Create notifications for all users except the one who posted the item
+
       try {
         const usersCollection = db.collection("Users");
         const notificationsCollection = db.collection("Notifications");
 
-        // Get all users except the one who posted
+
         const users = await usersCollection
           .find({ _id: { $ne: new ObjectId(req.userId) } })
           .toArray();
 
         if (users.length > 0) {
-          // Create notifications for all users
+
           const notifications = users.map((user) => ({
             userId: user._id.toString(),
             itemId: itemId,
@@ -194,7 +192,7 @@ router.post(
           );
         }
       } catch (notificationError) {
-        // Log error but don't fail the item creation
+
         console.error("Error creating notifications:", notificationError);
       }
 
@@ -204,7 +202,6 @@ router.post(
         item: { ...newItem, _id: result.insertedId },
       });
     } catch (error) {
-      // If file was uploaded but error occurred, delete it
       if (req.file) {
         try {
           fs.unlinkSync(req.file.path);
@@ -231,14 +228,12 @@ router.put("/:id", authenticate, async (req, res, next) => {
     const db = await getDb();
     const itemsCollection = db.collection("Items");
 
-    // Check if item exists
+   
     const item = await itemsCollection.findOne({ _id: new ObjectId(id) });
     if (!item) {
       return res.status(404).json({ message: "Item not found." });
     }
 
-    // Check if user is updating status to "claimed" - allow anyone to claim items
-    // Otherwise, only owner can update their own items
     const isClaimingItem = status === "claimed" && item.status !== "claimed";
     const isOwner = item.userId === req.userId;
 
@@ -248,7 +243,6 @@ router.put("/:id", authenticate, async (req, res, next) => {
         .json({ message: "You can only update your own items." });
     }
 
-    // If someone is claiming an item (not the owner), only allow status update
     if (isClaimingItem && !isOwner) {
       if (
         name ||
@@ -291,14 +285,12 @@ router.put("/:id", authenticate, async (req, res, next) => {
       return res.status(404).json({ message: "Item not found." });
     }
 
-    // Create notification when item is claimed (status changes to "claimed")
     if (isClaimingItem && item.userId !== req.userId) {
-      // Notify the item owner that their item has been claimed
       try {
         const notificationsCollection = db.collection("Notifications");
 
         const notification = {
-          userId: item.userId, // Notify the item owner
+          userId: item.userId,
           itemId: id,
           itemName: item.name,
           itemLocation: item.location,
@@ -307,7 +299,7 @@ router.put("/:id", authenticate, async (req, res, next) => {
           dateFound: item.dateFound,
           read: false,
           createdAt: new Date(),
-          type: "claimed", // Add a type field to distinguish claim notifications
+          type: "claimed",
         };
 
         await notificationsCollection.insertOne(notification);
@@ -315,7 +307,6 @@ router.put("/:id", authenticate, async (req, res, next) => {
           `Created claim notification for item owner: ${item.userId}, item: ${id}`
         );
       } catch (notificationError) {
-        // Log error but don't fail the item update
         console.error("Error creating claim notification:", notificationError);
       }
     }
@@ -338,7 +329,6 @@ router.delete("/:id", authenticate, async (req, res, next) => {
     const db = await getDb();
     const itemsCollection = db.collection("Items");
 
-    // Check if item exists and belongs to the authenticated user
     const item = await itemsCollection.findOne({ _id: new ObjectId(id) });
     if (!item) {
       return res.status(404).json({ message: "Item not found." });

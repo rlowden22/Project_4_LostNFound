@@ -15,15 +15,13 @@ router.get("/", async (req, res, next) => {
     const db = await getDb();
     const notificationsCollection = db.collection("Notifications");
 
-    // Parse pagination parameters
     const pageNum = parseInt(page, 10);
     const limitNum = parseInt(limit, 10);
     const skip = (pageNum - 1) * limitNum;
 
-    // Get total count for pagination
+
     const totalCount = await notificationsCollection.countDocuments({ userId });
 
-    // Get paginated notifications
     const notifications = await notificationsCollection
       .find({ userId })
       .sort({ createdAt: -1 })
@@ -31,7 +29,6 @@ router.get("/", async (req, res, next) => {
       .limit(limitNum)
       .toArray();
 
-    // Calculate total pages
     const totalPages = Math.ceil(totalCount / limitNum);
 
     res.json({
@@ -183,7 +180,7 @@ router.post("/", async (req, res, next) => {
       itemImage: itemImage || null,
       itemCategory: itemCategory || null,
       dateFound: dateFound || null,
-      type: type || "new", // "new" for new items, "claimed" for claim notifications
+      type: type || "new", 
       read: false,
       createdAt: new Date(),
     };
