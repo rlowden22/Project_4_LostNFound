@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import {
   Container,
@@ -22,8 +23,25 @@ import { Link } from "react-router-dom";
 import "../styles/screens/NotificationScreen.css";
 import { API_BASE_URL } from "../config/api";
 
-const NotificationScreen = () => {
+const noopStorage = {
+  getItem: () => null,
+  setItem: () => {},
+  removeItem: () => {},
+};
+
+const NotificationScreen = ({
+  apiBaseUrl = API_BASE_URL,
+  fetchFn = fetch,
+  storage,
+}) => {
   const navigate = useNavigate();
+  const storageRef = useMemo(() => {
+    if (storage) return storage;
+    if (typeof window !== "undefined" && window.localStorage) {
+      return window.localStorage;
+    }
+    return noopStorage;
+  }, [storage]);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -36,10 +54,9 @@ const NotificationScreen = () => {
     hasPrevPage: false,
   });
 
-  // Check authentication and get userId
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userData = localStorage.getItem("user");
+    const token = storageRef.getItem("token");
+    const userData = storageRef.getItem("user");
 
     if (!token) {
       navigate("/login");
@@ -54,17 +71,16 @@ const NotificationScreen = () => {
         console.error("Error parsing user data:", err);
       }
     }
-  }, [navigate]);
+  }, [navigate, storageRef]);
 
-  // Fetch notifications
   useEffect(() => {
     const fetchNotifications = async () => {
       if (!userId) return;
 
       try {
         setLoading(true);
-        const response = await fetch(
-          `${API_BASE_URL}/api/notifications?userId=${userId}&page=${currentPage}&limit=10`
+        const response = await fetchFn(
+          `${apiBaseUrl}/api/notifications?userId=${userId}&page=${currentPage}&limit=10`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch notifications");
@@ -84,12 +100,12 @@ const NotificationScreen = () => {
     };
 
     fetchNotifications();
-  }, [userId, currentPage]);
+  }, [apiBaseUrl, fetchFn, userId, currentPage]);
 
   const markAsRead = async (notificationId) => {
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/notifications/${notificationId}/read`,
+      const response = await fetchFn(
+        `${apiBaseUrl}/api/notifications/${notificationId}/read`,
         {
           method: "PUT",
         }
@@ -99,7 +115,6 @@ const NotificationScreen = () => {
         throw new Error("Failed to mark notification as read");
       }
 
-      // Update local state
       setNotifications(
         notifications.map((notif) =>
           notif._id === notificationId ? { ...notif, read: true } : notif
@@ -115,8 +130,8 @@ const NotificationScreen = () => {
     if (!userId) return;
 
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/notifications/read-all`,
+      const response = await fetchFn(
+        `${apiBaseUrl}/api/notifications/read-all`,
         {
           method: "PUT",
           headers: {
@@ -130,7 +145,6 @@ const NotificationScreen = () => {
         throw new Error("Failed to mark all notifications as read");
       }
 
-      // Update local state
       setNotifications(
         notifications.map((notif) => ({ ...notif, read: true }))
       );
@@ -146,8 +160,8 @@ const NotificationScreen = () => {
     }
 
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/notifications/${notificationId}`,
+      const response = await fetchFn(
+        `${apiBaseUrl}/api/notifications/${notificationId}`,
         {
           method: "DELETE",
         }
@@ -157,7 +171,6 @@ const NotificationScreen = () => {
         throw new Error("Failed to delete notification");
       }
 
-      // Update local state
       setNotifications(
         notifications.filter((notif) => notif._id !== notificationId)
       );
@@ -187,11 +200,10 @@ const NotificationScreen = () => {
     });
   };
 
-  // Helper function to get image URL
   const getImageUrl = (imagePath) => {
     if (!imagePath) return null;
     if (imagePath.startsWith("http")) return imagePath;
-    return `${API_BASE_URL}${imagePath}`;
+    return `${apiBaseUrl}${imagePath}`;
   };
 
   if (loading) {
@@ -262,7 +274,6 @@ const NotificationScreen = () => {
         ) : (
           <div className="notifications-list">
             {notifications.map((notification) => {
-              // Map database fields to component fields
               const itemName = notification.itemName || "Unknown Item";
               const itemLocation =
                 notification.itemLocation || "Unknown Location";
@@ -316,7 +327,7 @@ const NotificationScreen = () => {
                               </span>
                               <span className="notification-detail-item">
                                 <FaCalendarAlt className="detail-icon" />
-                                Found on{" "}
+                                Found on {" "}
                                 {new Date(dateFound).toLocaleDateString(
                                   "en-US",
                                   {
@@ -359,7 +370,6 @@ const NotificationScreen = () => {
           </div>
         )}
 
-        {/* Pagination */}
         {pagination.totalPages > 1 && (
           <div className="pagination-container mt-4">
             <div className="pagination-info mb-3">
@@ -435,6 +445,14 @@ const NotificationScreen = () => {
   );
 };
 
-NotificationScreen.propTypes = {};
+NotificationScreen.propTypes = {
+  apiBaseUrl: PropTypes.string,
+  fetchFn: PropTypes.func,
+  storage: PropTypes.shape({
+    getItem: PropTypes.func.isRequired,
+    setItem: PropTypes.func.isRequired,
+    removeItem: PropTypes.func.isRequired,
+  }),
+};
 
 export default NotificationScreen;

@@ -1,11 +1,27 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import { Container, Card, Form, Button, Row, Col } from "react-bootstrap";
 import "../styles/screens/LoginScreen.css";
 import { API_BASE_URL } from "../config/api";
 
-const LoginScreen = () => {
+const noopStorage = {
+  getItem: () => null,
+  setItem: () => {},
+  removeItem: () => {},
+};
+
+const LoginScreen = ({
+  apiBaseUrl = API_BASE_URL,
+  fetchFn = fetch,
+  storage,
+}) => {
   const navigate = useNavigate();
+  const storageRef =
+    storage ||
+    (typeof window !== "undefined" && window.localStorage
+      ? window.localStorage
+      : noopStorage);
   const [isSignIn, setIsSignIn] = useState(true);
   const initialFormState = {
     email: "",
@@ -32,10 +48,9 @@ const LoginScreen = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSignIn) {
-      // Handle sign in
       try {
         setIsSubmitting(true);
-        const response = await fetch(`${API_BASE_URL}/api/users/login`, {
+        const response = await fetchFn(`${apiBaseUrl}/api/users/login`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -53,15 +68,13 @@ const LoginScreen = () => {
           throw new Error(message);
         }
 
-        // Store token and user data in localStorage
         if (result.token) {
-          localStorage.setItem("token", result.token);
+          storageRef.setItem("token", result.token);
         }
         if (result.user) {
-          localStorage.setItem("user", JSON.stringify(result.user));
+          storageRef.setItem("user", JSON.stringify(result.user));
         }
 
-        // Redirect to home page after successful login
         navigate("/");
       } catch (error) {
         alert(error.message || "Unable to sign in at the moment.");
@@ -69,7 +82,6 @@ const LoginScreen = () => {
         setIsSubmitting(false);
       }
     } else {
-      // Handle create account
       if (formData.password !== formData.confirmPassword) {
         alert("Passwords do not match!");
         return;
@@ -84,7 +96,7 @@ const LoginScreen = () => {
 
       try {
         setIsSubmitting(true);
-        const response = await fetch(`${API_BASE_URL}/api/users`, {
+        const response = await fetchFn(`${apiBaseUrl}/api/users`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -235,8 +247,8 @@ const LoginScreen = () => {
                     {isSubmitting
                       ? "Submitting..."
                       : isSignIn
-                        ? "Sign In"
-                        : "Create Account"}
+                      ? "Sign In"
+                      : "Create Account"}
                   </Button>
                 </Form>
               </Card.Body>
@@ -248,6 +260,14 @@ const LoginScreen = () => {
   );
 };
 
-LoginScreen.propTypes = {};
+LoginScreen.propTypes = {
+  apiBaseUrl: PropTypes.string,
+  fetchFn: PropTypes.func,
+  storage: PropTypes.shape({
+    getItem: PropTypes.func.isRequired,
+    setItem: PropTypes.func.isRequired,
+    removeItem: PropTypes.func.isRequired,
+  }),
+};
 
 export default LoginScreen;

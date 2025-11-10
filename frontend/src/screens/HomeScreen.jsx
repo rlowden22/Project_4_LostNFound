@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { Container, Row, Col, Spinner } from "react-bootstrap";
 import Item from "../components/Item";
 import "../styles/screens/HomeScreen.css";
 import { API_BASE_URL } from "../config/api";
 
-const HomeScreen = () => {
+const HomeScreen = ({ apiBaseUrl = API_BASE_URL, fetchFn = fetch }) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,27 +14,22 @@ const HomeScreen = () => {
     const fetchItems = async () => {
       try {
         setLoading(true);
-        // Request only searching items (not claimed) with limit of 4
-        const response = await fetch(
-          `${API_BASE_URL}/api/items?status=searching&limit=4`
+        const response = await fetchFn(
+          `${apiBaseUrl}/api/items?status=searching&limit=4`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch items");
         }
         const data = await response.json();
-        // Handle both old format (array) and new format (object with items and pagination)
         let itemsArray = [];
         if (Array.isArray(data)) {
-          // Old format - filter out claimed items
           itemsArray = data.filter((item) => item.status !== "claimed");
         } else if (data.items && Array.isArray(data.items)) {
-          // New format - use items from paginated response
           itemsArray = data.items;
         } else {
           itemsArray = [];
         }
 
-        // Sort by dateFound (most recent first) and take first 4
         const recentItems = [...itemsArray]
           .sort((a, b) => new Date(b.dateFound) - new Date(a.dateFound))
           .slice(0, 4);
@@ -48,7 +44,7 @@ const HomeScreen = () => {
     };
 
     fetchItems();
-  }, []);
+  }, [apiBaseUrl, fetchFn]);
 
   return (
     <div className="home-screen">
@@ -82,6 +78,9 @@ const HomeScreen = () => {
   );
 };
 
-HomeScreen.propTypes = {};
+HomeScreen.propTypes = {
+  apiBaseUrl: PropTypes.string,
+  fetchFn: PropTypes.func,
+};
 
 export default HomeScreen;

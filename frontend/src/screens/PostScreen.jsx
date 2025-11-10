@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import {
   Container,
@@ -12,21 +13,36 @@ import {
 import "../styles/screens/PostScreen.css";
 import { API_BASE_URL } from "../config/api";
 
-const PostScreen = () => {
+const noopStorage = {
+  getItem: () => null,
+  setItem: () => {},
+  removeItem: () => {},
+};
+
+const PostScreen = ({
+  apiBaseUrl = API_BASE_URL,
+  fetchFn = fetch,
+  storage,
+}) => {
   const navigate = useNavigate();
+  const storageRef = useMemo(() => {
+    if (storage) return storage;
+    if (typeof window !== "undefined" && window.localStorage) {
+      return window.localStorage;
+    }
+    return noopStorage;
+  }, [storage]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Check if user is logged in on component mount
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = storageRef.getItem("token");
     if (!token) {
-      // Redirect to login page if not authenticated
       navigate("/login");
     } else {
       setIsAuthenticated(true);
     }
-  }, [navigate]);
+  }, [navigate, storageRef]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -60,7 +76,7 @@ const PostScreen = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const token = localStorage.getItem("token");
+    const token = storageRef.getItem("token");
     if (!token) {
       alert("You must be logged in to post an item.");
       navigate("/login");
@@ -70,7 +86,6 @@ const PostScreen = () => {
     try {
       setIsSubmitting(true);
 
-      // Create FormData to send file and other fields
       const formDataToSend = new FormData();
       formDataToSend.append("name", formData.name.trim());
       formDataToSend.append("location", formData.location.trim());
@@ -79,15 +94,13 @@ const PostScreen = () => {
       formDataToSend.append("category", formData.category);
       formDataToSend.append("status", "searching");
 
-      // Append image file if selected
       if (formData.image) {
         formDataToSend.append("image", formData.image);
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/items`, {
+      const response = await fetchFn(`${apiBaseUrl}/api/items`, {
         method: "POST",
         headers: {
-          // Don't set Content-Type header - browser will set it with boundary for FormData
           Authorization: `Bearer ${token}`,
         },
         body: formDataToSend,
@@ -101,10 +114,8 @@ const PostScreen = () => {
         throw new Error(message);
       }
 
-      // Success - show message and redirect or clear form
       alert("Item posted successfully!");
 
-      // Clear form
       setFormData({
         name: "",
         location: "",
@@ -115,7 +126,6 @@ const PostScreen = () => {
         imagePreview: null,
       });
 
-      // Redirect to items page to see the new item
       navigate("/items");
     } catch (error) {
       alert(error.message || "Unable to post item at the moment.");
@@ -135,7 +145,6 @@ const PostScreen = () => {
     "Other",
   ];
 
-  // Don't render form if not authenticated (prevents flash before redirect)
   if (!isAuthenticated) {
     return null;
   }
@@ -150,8 +159,7 @@ const PostScreen = () => {
                 <div className="post-header">
                   <h2 className="post-title">Post a Lost Item</h2>
                   <p className="post-subtitle">
-                    Help others find their lost belongings by posting an item
-                    you found
+                    Help others find their lost belongings by posting an item you found
                   </p>
                 </div>
 
@@ -323,6 +331,14 @@ const PostScreen = () => {
   );
 };
 
-PostScreen.propTypes = {};
+PostScreen.propTypes = {
+  apiBaseUrl: PropTypes.string,
+  fetchFn: PropTypes.func,
+  storage: PropTypes.shape({
+    getItem: PropTypes.func.isRequired,
+    setItem: PropTypes.func.isRequired,
+    removeItem: PropTypes.func.isRequired,
+  }),
+};
 
 export default PostScreen;

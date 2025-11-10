@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import {
   Container,
@@ -24,8 +25,25 @@ import {
 import "../styles/screens/ProfileScreen.css";
 import { API_BASE_URL } from "../config/api";
 
-const ProfileScreen = () => {
+const noopStorage = {
+  getItem: () => null,
+  setItem: () => {},
+  removeItem: () => {},
+};
+
+const ProfileScreen = ({
+  apiBaseUrl = API_BASE_URL,
+  fetchFn = fetch,
+  storage,
+}) => {
   const navigate = useNavigate();
+  const storageRef = useMemo(() => {
+    if (storage) return storage;
+    if (typeof window !== "undefined" && window.localStorage) {
+      return window.localStorage;
+    }
+    return noopStorage;
+  }, [storage]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
@@ -40,8 +58,8 @@ const ProfileScreen = () => {
 
   // Check authentication and fetch user data
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userData = localStorage.getItem("user");
+    const token = storageRef.getItem("token");
+    const userData = storageRef.getItem("user");
 
     if (!token) {
       navigate("/login");
@@ -75,8 +93,8 @@ const ProfileScreen = () => {
         }
 
         if (userId) {
-          const response = await fetch(
-            `${API_BASE_URL}/api/items/user/${userId}`
+          const response = await fetchFn(
+            `${apiBaseUrl}/api/items/user/${userId}`
           );
           if (response.ok) {
             const items = await response.json();
@@ -96,7 +114,7 @@ const ProfileScreen = () => {
     };
 
     fetchUserItems();
-  }, [navigate]);
+  }, [navigate, apiBaseUrl, fetchFn, storageRef]);
 
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
@@ -113,8 +131,8 @@ const ProfileScreen = () => {
       return;
     }
 
-    const token = localStorage.getItem("token");
-    const userData = localStorage.getItem("user");
+    const token = storageRef.getItem("token");
+    const userData = storageRef.getItem("user");
 
     if (!token || !userData) {
       alert("You must be logged in to change your password.");
@@ -123,7 +141,7 @@ const ProfileScreen = () => {
 
     try {
       const parsedUser = JSON.parse(userData);
-      const response = await fetch(`${API_BASE_URL}/api/users/password`, {
+      const response = await fetchFn(`${apiBaseUrl}/api/users/password`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -159,14 +177,14 @@ const ProfileScreen = () => {
       return;
     }
 
-    const token = localStorage.getItem("token");
+    const token = storageRef.getItem("token");
     if (!token) {
       alert("You must be logged in to delete items.");
       return;
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/items/${postId}`, {
+      const response = await fetchFn(`${apiBaseUrl}/api/items/${postId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -187,7 +205,7 @@ const ProfileScreen = () => {
   };
 
   const handleStatusChange = async (postId) => {
-    const token = localStorage.getItem("token");
+    const token = storageRef.getItem("token");
     if (!token) {
       alert("You must be logged in to update item status.");
       return;
@@ -199,7 +217,7 @@ const ProfileScreen = () => {
     const newStatus = post.status === "searching" ? "claimed" : "searching";
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/items/${postId}`, {
+      const response = await fetchFn(`${apiBaseUrl}/api/items/${postId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -229,8 +247,8 @@ const ProfileScreen = () => {
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to logout?")) {
       // Clear localStorage
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      storageRef.removeItem("token");
+      storageRef.removeItem("user");
 
       // Redirect to login page
       navigate("/login");
@@ -372,7 +390,7 @@ const ProfileScreen = () => {
                                 src={
                                   post.image.startsWith("http")
                                     ? post.image
-                                    : `${API_BASE_URL}${post.image}`
+                                    : `${apiBaseUrl}${post.image}`
                                 }
                                 alt={post.name}
                                 className="post-item-image"
@@ -548,6 +566,14 @@ const ProfileScreen = () => {
   );
 };
 
-ProfileScreen.propTypes = {};
+ProfileScreen.propTypes = {
+  apiBaseUrl: PropTypes.string,
+  fetchFn: PropTypes.func,
+  storage: PropTypes.shape({
+    getItem: PropTypes.func.isRequired,
+    setItem: PropTypes.func.isRequired,
+    removeItem: PropTypes.func.isRequired,
+  }),
+};
 
 export default ProfileScreen;

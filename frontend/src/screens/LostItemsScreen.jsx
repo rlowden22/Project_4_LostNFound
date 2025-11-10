@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import PropTypes from "prop-types";
 import {
   Container,
   Row,
@@ -14,7 +15,7 @@ import Searchbar from "../components/Searchbar";
 import "../styles/screens/LostItemsScreen.css";
 import { API_BASE_URL } from "../config/api";
 
-const LostItemsScreen = () => {
+const LostItemsScreen = ({ apiBaseUrl = API_BASE_URL, fetchFn = fetch }) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,7 +33,6 @@ const LostItemsScreen = () => {
     hasPrevPage: false,
   });
 
-  // Fetch items from API
   useEffect(() => {
     const fetchItems = async () => {
       try {
@@ -42,18 +42,17 @@ const LostItemsScreen = () => {
         if (filters.location) params.append("location", filters.location);
         if (filters.dateFound) params.append("dateFound", filters.dateFound);
         if (filters.category) params.append("category", filters.category);
-        params.append("status", "searching"); // Only get items that are searching (not claimed)
+        params.append("status", "searching");
         params.append("page", currentPage.toString());
         params.append("limit", "12");
 
-        const response = await fetch(
-          `${API_BASE_URL}/api/items?${params.toString()}`
+        const response = await fetchFn(
+          `${apiBaseUrl}/api/items?${params.toString()}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch items");
         }
         const data = await response.json();
-        // Handle both old format (array) and new format (object with items and pagination)
         if (Array.isArray(data)) {
           const activeItems = data.filter((item) => item.status !== "claimed");
           setItems(activeItems);
@@ -74,6 +73,8 @@ const LostItemsScreen = () => {
 
     fetchItems();
   }, [
+    apiBaseUrl,
+    fetchFn,
     searchTerm,
     filters.location,
     filters.dateFound,
@@ -81,12 +82,10 @@ const LostItemsScreen = () => {
     currentPage,
   ]);
 
-  // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, filters.location, filters.dateFound, filters.category]);
 
-  // Get unique values for filter options from fetched items
   const locations = useMemo(() => {
     const uniqueLocations = [...new Set(items.map((item) => item.location))];
     return uniqueLocations.sort();
@@ -122,8 +121,7 @@ const LostItemsScreen = () => {
         <div className="screen-header">
           <h1 className="screen-title">Lost Items</h1>
           <p className="screen-subtitle">
-            Browse through all lost items and use filters to find what you're
-            looking for
+            Browse through all lost items and use filters to find what you're looking for
           </p>
         </div>
 
@@ -217,7 +215,9 @@ const LostItemsScreen = () => {
                 <h3 className="results-title">
                   {items.length === 0
                     ? "No items found"
-                    : `${pagination.totalCount || items.length} item${(pagination.totalCount || items.length) !== 1 ? "s" : ""} found`}
+                    : `${pagination.totalCount || items.length} item${
+                        (pagination.totalCount || items.length) !== 1 ? "s" : ""
+                      } found`}
                 </h3>
               </div>
 
@@ -231,13 +231,11 @@ const LostItemsScreen = () => {
                     ))}
                   </Row>
 
-                  {/* Pagination */}
                   {pagination.totalPages > 1 && (
                     <div className="pagination-container mt-4">
                       <div className="pagination-info mb-3 text-center">
                         <p className="text-muted mb-0">
-                          Showing page {pagination.currentPage} of{" "}
-                          {pagination.totalPages}
+                          Showing page {pagination.currentPage} of {pagination.totalPages}
                         </p>
                       </div>
                       <div className="pagination-controls d-flex justify-content-center align-items-center gap-2">
@@ -308,8 +306,7 @@ const LostItemsScreen = () => {
               ) : (
                 <div className="no-items-message">
                   <p>
-                    No items match your current filters. Try adjusting your
-                    search criteria.
+                    No items match your current filters. Try adjusting your search criteria.
                   </p>
                 </div>
               )}
@@ -321,6 +318,9 @@ const LostItemsScreen = () => {
   );
 };
 
-LostItemsScreen.propTypes = {};
+LostItemsScreen.propTypes = {
+  apiBaseUrl: PropTypes.string,
+  fetchFn: PropTypes.func,
+};
 
 export default LostItemsScreen;

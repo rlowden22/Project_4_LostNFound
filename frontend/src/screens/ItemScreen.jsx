@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Button, Spinner } from "react-bootstrap";
 import {
@@ -12,7 +13,7 @@ import {
 import "../styles/screens/ItemScreen.css";
 import { API_BASE_URL } from "../config/api";
 
-const ItemScreen = () => {
+const ItemScreen = ({ apiBaseUrl = API_BASE_URL, fetchFn = fetch }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [item, setItem] = useState(null);
@@ -25,7 +26,7 @@ const ItemScreen = () => {
     const fetchItem = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_BASE_URL}/api/items/${id}`);
+        const response = await fetchFn(`${apiBaseUrl}/api/items/${id}`);
         if (!response.ok) {
           if (response.status === 404) {
             setError("Item not found");
@@ -37,12 +38,11 @@ const ItemScreen = () => {
         const itemData = await response.json();
         setItem(itemData);
 
-        // Fetch user information if userId exists (the person who posted the item)
         if (itemData.userId) {
           try {
             setLoadingUser(true);
-            const userResponse = await fetch(
-              `${API_BASE_URL}/api/users/profile?userId=${itemData.userId}`
+            const userResponse = await fetchFn(
+              `${apiBaseUrl}/api/users/profile?userId=${itemData.userId}`
             );
             if (userResponse.ok) {
               const userData = await userResponse.json();
@@ -71,7 +71,7 @@ const ItemScreen = () => {
     if (id) {
       fetchItem();
     }
-  }, [id]);
+  }, [apiBaseUrl, fetchFn, id]);
 
   if (loading) {
     return (
@@ -103,7 +103,6 @@ const ItemScreen = () => {
     );
   }
 
-  // Use user data from API, or show placeholder if not available
   const contactDetails = user
     ? {
         name: user.name || "Unknown",
@@ -138,7 +137,7 @@ const ItemScreen = () => {
                   src={
                     item.image.startsWith("http")
                       ? item.image
-                      : `${API_BASE_URL}${item.image}`
+                      : `${apiBaseUrl}${item.image}`
                   }
                   alt={item.name}
                   className="item-detail-image"
@@ -277,6 +276,9 @@ const ItemScreen = () => {
   );
 };
 
-ItemScreen.propTypes = {};
+ItemScreen.propTypes = {
+  apiBaseUrl: PropTypes.string,
+  fetchFn: PropTypes.func,
+};
 
 export default ItemScreen;
