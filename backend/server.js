@@ -37,7 +37,27 @@ app.use("/api/users", userRoutes);
 app.use("/api/items", itemRoutes);
 app.use("/api/notifications", notificationRoutes);
 
+// Serve frontend build when available (e.g., in production)
+const frontendBuildPath = path.join(__dirname, "../frontend/dist");
+if (fs.existsSync(frontendBuildPath)) {
+  app.use(express.static(frontendBuildPath));
 
+  app.use((req, res, next) => {
+    if (req.method !== "GET") {
+      return next();
+    }
+
+    if (
+      req.path.startsWith("/api") ||
+      req.path.startsWith("/uploads") ||
+      req.path === "/health"
+    ) {
+      return next();
+    }
+
+    res.sendFile(path.join(frontendBuildPath, "index.html"));
+  });
+}
 
 app.use((err, _req, res, _next) => {
   console.error(err);
