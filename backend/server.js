@@ -37,7 +37,6 @@ app.use("/api/users", userRoutes);
 app.use("/api/items", itemRoutes);
 app.use("/api/notifications", notificationRoutes);
 
-// Serve frontend build when available (e.g., in production)
 const frontendBuildPath = path.join(__dirname, "../frontend/dist");
 if (fs.existsSync(frontendBuildPath)) {
   app.use(express.static(frontendBuildPath));
