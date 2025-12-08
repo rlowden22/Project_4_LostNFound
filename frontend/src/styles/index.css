@@ -1,12 +1,57 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600&display=swap");
+
+:root {
+  --font-body: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: "Playfair Display", "Merriweather", "Georgia", serif;
+  --body-text-color: #1f2933;
+  --muted-text-color: #4b5563;
+  --heading-letter-spacing: 0.02em;
+  --base-line-height: 1.65;
+}
+
 html,
 body {
   height: 100%;
   margin: 0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
-    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: var(--base-line-height);
+  letter-spacing: 0.01em;
+  color: var(--body-text-color);
+  background-color: #f8fafc;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  margin: 0 0 0.75rem;
+  line-height: 1.25;
+  letter-spacing: var(--heading-letter-spacing);
+  color: #0f172a;
+}
+
+p,
+li,
+label,
+input,
+textarea {
+  font-family: var(--font-body);
+  color: var(--body-text-color);
+}
+
+small,
+.muted-text {
+  color: var(--muted-text-color);
+  font-size: 0.875rem;
 }
 
 #root {
