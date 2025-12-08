@@ -19,7 +19,7 @@
   display: block;
   overflow: hidden;
   height: 250px;
-  background-color: #f8f9fa;
+  background-color: var(--color-surface-muted);
 }
 
 .item-image {
@@ -27,7 +27,7 @@
   height: 100%;
   object-fit: contain;
   object-position: center;
-  background-color: #f8f9fa;
+  background-color: var(--color-surface-muted);
   transition: transform 0.3s ease;
 }
 
@@ -41,8 +41,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
-  color: #636e72;
+  background: var(--gradient-muted);
+  color: var(--muted-text-color);
   font-size: 1rem;
   font-weight: 500;
 }
@@ -65,12 +65,12 @@
 
 .item-title a {
   text-decoration: none;
-  color: #2d3436;
+  color: var(--heading-color);
   transition: color 0.3s ease;
 }
 
 .item-title a:hover {
-  color: #4ecdc4;
+  color: var(--color-accent);
 }
 
 .item-title strong {
@@ -87,7 +87,7 @@
 .item-location h3 {
   font-size: 1rem;
   font-weight: 500;
-  color: #636e72;
+  color: var(--muted-text-color);
   margin: 0;
   line-height: 1.5;
 }

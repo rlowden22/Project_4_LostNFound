@@ -1,9 +1,9 @@
 import path from "path";
 import fs from "fs";
-import dotenv from "dotenv";
 import express from "express";
 import { fileURLToPath } from "url";
 
+import { loadEnv } from "./config/loadEnv.js";
 import userRoutes from "./routes/users.js";
 import itemRoutes from "./routes/items.js";
 import notificationRoutes from "./routes/notifications.js";
@@ -11,16 +11,7 @@ import notificationRoutes from "./routes/notifications.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const envPaths = [
-  path.join(__dirname, "../.env"),
-  path.join(__dirname, ".env"),
-];
-const envPath = envPaths.find((candidate) => fs.existsSync(candidate));
-if (envPath) {
-  dotenv.config({ path: envPath });
-} else {
-  dotenv.config();
-}
+loadEnv();
 
 const app = express();
 const port = process.env.PORT || 4000;

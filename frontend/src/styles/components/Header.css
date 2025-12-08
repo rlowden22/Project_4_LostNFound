@@ -9,7 +9,7 @@ header {
 }
 
 header .navbar {
-  background: linear-gradient(135deg, #1a1d21 0%, #2d3436 100%);
+  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--heading-color) 100%);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding: 0.75rem 0;
   transition: all 0.3s ease;
@@ -19,13 +19,13 @@ header .navbar-brand {
   font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: 0.5px;
-  color: #fff;
+  color: var(--color-surface);
   transition: all 0.3s ease;
   text-decoration: none;
 }
 
 header .navbar-brand:hover {
-  color: #4ecdc4;
+  color: var(--color-accent);
   transform: scale(1.05);
 }
 
@@ -40,7 +40,7 @@ header .navbar-nav .nav-link {
 }
 
 header .navbar-nav .nav-link:hover {
-  color: #fff;
+  color: var(--color-surface);
   background-color: rgba(255, 255, 255, 0.1);
   transform: translateY(-2px);
 }
@@ -52,7 +52,7 @@ header .navbar-nav .nav-link::after {
   left: 50%;
   width: 0;
   height: 2px;
-  background: linear-gradient(90deg, #4ecdc4, #44a08d);
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-strong));
   transition: all 0.3s ease;
   transform: translateX(-50%);
 }

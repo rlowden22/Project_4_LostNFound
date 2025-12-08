@@ -2,7 +2,7 @@
 .post-screen {
   min-height: calc(100vh - 200px);
   padding: 3rem 0;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: var(--gradient-page);
   display: flex;
   align-items: flex-start;
   position: relative;
@@ -40,7 +40,7 @@
   border-radius: 20px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  background: #ffffff;
+  background: var(--color-surface);
   animation: slideUp 0.6s ease-out;
 }
 
@@ -59,29 +59,29 @@
   text-align: center;
   margin-bottom: 2rem;
   padding-bottom: 1.5rem;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 2px solid var(--color-border-light);
 }
 
 .post-title {
   font-size: 2rem;
   font-weight: 700;
-  color: #2d3436;
+  color: var(--heading-color);
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+  background: var(--gradient-brand);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .post-subtitle {
-  color: #636e72;
+  color: var(--muted-text-color);
   font-size: 0.95rem;
   margin: 0;
 }
 
 .post-card .form-label {
   font-weight: 600;
-  color: #2d3436;
+  color: var(--heading-color);
   font-size: 0.9rem;
   margin-bottom: 0.5rem;
   display: block;
@@ -93,24 +93,24 @@
 
 .post-card .form-control,
 .post-card .form-select {
-  border: 2px solid #e9ecef;
+  border: 2px solid var(--color-border);
   border-radius: 10px;
   padding: 0.75rem 1rem;
   font-size: 0.95rem;
   transition: all 0.3s ease;
-  background-color: #f8f9fa;
+  background-color: var(--color-surface-muted);
 }
 
 .post-card .form-control:focus,
 .post-card .form-select:focus {
-  border-color: #4ecdc4;
-  background-color: #ffffff;
+  border-color: var(--color-accent);
+  background-color: var(--color-surface);
   box-shadow: 0 0 0 0.2rem rgba(78, 205, 196, 0.25);
   outline: none;
 }
 
 .post-card .form-control::placeholder {
-  color: #adb5bd;
+  color: var(--color-text-subtle);
 }
 
 .post-card textarea.form-control {
@@ -128,8 +128,8 @@
 }
 
 .image-input::file-selector-button {
-  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
-  color: white;
+  background: var(--gradient-accent);
+  color: var(--color-surface);
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 8px;
@@ -157,7 +157,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   object-fit: contain;
   object-position: center;
-  background-color: #f8f9fa;
+  background-color: var(--color-surface-muted);
 }
 
 .remove-image-btn {
@@ -179,12 +179,12 @@
   gap: 1rem;
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 2px solid #f0f0f0;
+  border-top: 2px solid var(--color-border-light);
 }
 
-.submit-btn {
+.post-screen .submit-btn {
   flex: 1;
-  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+  background: var(--gradient-accent);
   border: none;
   border-radius: 10px;
   padding: 0.875rem;
@@ -194,41 +194,42 @@
   box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3);
 }
 
-.submit-btn:hover {
+.post-screen .submit-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
-  background: linear-gradient(135deg, #44a08d 0%, #4ecdc4 100%);
+  background: var(--gradient-accent-reverse);
 }
 
-.submit-btn:active {
+.post-screen .submit-btn:active {
   transform: translateY(0);
 }
 
-.submit-btn:focus {
+.post-screen .submit-btn:focus {
   box-shadow: 0 0 0 0.2rem rgba(78, 205, 196, 0.5);
 }
 
-.cancel-btn {
+.post-screen .cancel-btn {
   flex: 1;
-  border: 2px solid #e9ecef;
+  border: 2px solid var(--color-cancel);
   border-radius: 10px;
   padding: 0.875rem;
   font-weight: 600;
   font-size: 1rem;
   transition: all 0.3s ease;
-  background-color: #ffffff;
-  color: #636e72;
+  background-color: transparent;
+  color: var(--color-cancel);
 }
 
-.cancel-btn:hover {
-  background-color: #f8f9fa;
-  border-color: #dee2e6;
+.post-screen .cancel-btn:hover {
+  background-color: var(--color-cancel);
+  border-color: var(--color-cancel);
   transform: translateY(-2px);
-  color: #2d3436;
+  color: var(--color-surface);
+  box-shadow: 0 6px 16px rgba(220, 53, 69, 0.35);
 }
 
-.cancel-btn:focus {
-  box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25);
+.post-screen .cancel-btn:focus {
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.35);
 }
 
 /* Responsive adjustments */
@@ -260,8 +261,8 @@
     flex-direction: column;
   }
 
-  .submit-btn,
-  .cancel-btn {
+  .post-screen .submit-btn,
+  .post-screen .cancel-btn {
     width: 100%;
   }
 

@@ -1,6 +1,6 @@
 /* Modern Footer Styles */
 footer {
-  background: linear-gradient(135deg, #1a1d21 0%, #2d3436 100%);
+  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--heading-color) 100%);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   margin-top: auto;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
@@ -12,7 +12,7 @@ footer .container {
 }
 
 .footer-title {
-  color: #fff;
+  color: var(--color-surface);
   font-size: 1.1rem;
   font-weight: 700;
   margin-bottom: 1rem;
@@ -22,7 +22,7 @@ footer .container {
 }
 
 .footer-logo .lnf-logo-text {
-  color: #fff;
+  color: var(--color-surface);
   font-size: 1.1rem;
 }
 
@@ -57,7 +57,7 @@ footer .footer-contact .contact-item,
 }
 
 .contact-icon {
-  color: #4ecdc4;
+  color: var(--color-accent);
   font-size: 1.1rem;
   flex-shrink: 0;
 }
@@ -87,7 +87,7 @@ footer .contact-item a:hover,
 footer .footer-contact .contact-item a:hover,
 .footer-contact .contact-item a:hover,
 .contact-item a:hover {
-  color: #4ecdc4;
+  color: var(--color-accent);
   background: none;
   background-color: transparent;
   background-image: none;
@@ -161,8 +161,8 @@ footer .contact-item span,
 }
 
 .social-link:hover {
-  background-color: #4ecdc4;
-  color: #fff;
+  background-color: var(--color-accent);
+  color: var(--color-surface);
   transform: translateY(-3px);
   box-shadow: 0 4px 8px rgba(78, 205, 196, 0.3);
 }

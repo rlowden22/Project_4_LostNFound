@@ -4,9 +4,37 @@
   --font-body: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --font-heading: "Playfair Display", "Merriweather", "Georgia", serif;
   --body-text-color: #1f2933;
-  --muted-text-color: #4b5563;
+  --muted-text-color: #636e72;
+  --color-text-strong: #4a4a4a;
+  --color-text-subtle: #adb5bd;
   --heading-letter-spacing: 0.02em;
   --base-line-height: 1.65;
+  --heading-color: #2d3436;
+  --body-background: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f8f9fa;
+  --color-surface-soft: #f5f7fa;
+  --color-page-accent: #c3cfe2;
+  --color-border: #e9ecef;
+  --color-border-light: #f0f0f0;
+  --color-border-strong: #dee2e6;
+  --color-primary-dark: #1a1d21;
+  --color-primary-light: #636e72;
+  --color-accent: #4ecdc4;
+  --color-accent-strong: #44a08d;
+  --color-approval: #22c55e;
+  --color-approval-dark: #16a34a;
+  --color-warning: #f59e0b;
+  --color-warning-dark: #d97706;
+  --color-cancel: #dc3545;
+  --color-cancel-dark: #c82333;
+  --color-cancel-darker: #bd2130;
+  --gradient-brand: linear-gradient(135deg, var(--heading-color) 0%, var(--color-primary-light) 100%);
+  --gradient-accent: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-strong) 100%);
+  --gradient-accent-reverse: linear-gradient(135deg, var(--color-accent-strong) 0%, var(--color-accent) 100%);
+  --gradient-card: linear-gradient(135deg, var(--color-surface-muted) 0%, var(--color-surface) 100%);
+  --gradient-muted: linear-gradient(135deg, var(--color-border) 0%, var(--color-surface-muted) 100%);
+  --gradient-page: linear-gradient(135deg, var(--color-surface-soft) 0%, var(--color-page-accent) 100%);
 }
 
 html,
@@ -23,7 +51,7 @@ body {
   line-height: var(--base-line-height);
   letter-spacing: 0.01em;
   color: var(--body-text-color);
-  background-color: #f8fafc;
+  background-color: var(--body-background);
 }
 
 h1,
@@ -36,7 +64,7 @@ h6 {
   margin: 0 0 0.75rem;
   line-height: 1.25;
   letter-spacing: var(--heading-letter-spacing);
-  color: #0f172a;
+  color: var(--heading-color);
 }
 
 p,
@@ -68,6 +96,102 @@ small,
 
 .main-content {
   flex: 1;
+}
+
+.btn-primary,
+.btn-outline-primary.active,
+.badge.bg-primary,
+.badge.text-bg-primary {
+  background: var(--gradient-accent);
+  border-color: var(--color-accent-strong);
+  color: var(--color-surface);
+}
+
+.btn-primary:hover,
+.btn-outline-primary.active:hover {
+  background: var(--gradient-accent-reverse);
+  border-color: var(--color-accent);
+  color: var(--color-surface);
+}
+
+.btn-success,
+.btn-success:focus,
+.badge.bg-success,
+.badge.text-bg-success {
+  background-color: var(--color-approval);
+  border-color: var(--color-approval-dark);
+  color: var(--color-surface);
+}
+
+.btn-success:hover,
+.btn-success:active {
+  background-color: var(--color-approval-dark);
+  border-color: var(--color-approval-dark);
+  color: var(--color-surface);
+}
+
+.badge.bg-warning,
+.badge.text-bg-warning {
+  background-color: var(--color-warning);
+  color: var(--color-primary-dark);
+}
+
+.btn-warning,
+.btn-warning:focus {
+  background-color: var(--color-warning);
+  border-color: var(--color-warning);
+  color: var(--color-primary-dark);
+}
+
+.btn-warning:hover,
+.btn-warning:active {
+  background-color: var(--color-warning-dark);
+  border-color: var(--color-warning-dark);
+  color: var(--color-primary-dark);
+}
+
+.btn-outline-primary {
+  color: var(--color-accent-strong);
+  border-color: var(--color-accent);
+  transition: all 0.2s ease;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+  background-color: rgba(78, 205, 196, 0.12);
+  color: var(--color-accent-strong);
+  border-color: var(--color-accent-strong);
+}
+
+.btn-danger,
+.btn-outline-danger {
+  border-color: var(--color-cancel);
+  color: var(--color-cancel);
+  transition: all 0.2s ease;
+}
+
+.btn-danger,
+.btn-danger:focus {
+  background-color: var(--color-cancel);
+  color: var(--color-surface);
+}
+
+.btn-danger:hover,
+.btn-danger:active {
+  background-color: var(--color-cancel-dark);
+  border-color: var(--color-cancel-dark);
+}
+
+.btn-outline-danger:hover,
+.btn-outline-danger:focus {
+  background-color: var(--color-cancel);
+  color: var(--color-surface);
+  border-color: var(--color-cancel);
+}
+
+.badge.bg-danger,
+.badge.text-bg-danger {
+  background-color: var(--color-cancel);
 }
 
 code {

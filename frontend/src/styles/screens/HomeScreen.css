@@ -2,7 +2,7 @@
 .home-screen {
   padding: 3rem 0;
   min-height: calc(100vh - 200px);
-  background: #ffffff;
+  background: var(--color-surface);
   position: relative;
 }
 
@@ -20,7 +20,7 @@
   font-size: 3.5rem;
   font-weight: 800;
   text-align: center;
-  background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+  background: var(--gradient-brand);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -39,7 +39,7 @@
   transform: translateX(-50%);
   width: 100px;
   height: 4px;
-  background: linear-gradient(90deg, #4ecdc4, #44a08d);
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-strong));
   border-radius: 2px;
   animation: expandWidth 0.8s ease-out 0.3s forwards;
   width: 0;
